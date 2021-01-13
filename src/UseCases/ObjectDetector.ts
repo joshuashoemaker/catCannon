@@ -1,5 +1,6 @@
 import * as tf from '@tensorflow/tfjs'
 import * as cocossd from '@tensorflow-models/coco-ssd'
+import PredictedObject from '../Models/PredictedObject'
 
 let instance: ObjectDetector | null = null
 
@@ -16,7 +17,19 @@ class ObjectDetector {
     return instance
   }
 
-  private doesPredictionPassFilterPredicates (prediction: cocossd.DetectedObject): boolean {
+  private convertDetectedToPredictedObjects = (detectedObjects: cocossd.DetectedObject[]) => {
+    const predictedObjects: PredictedObject[] = detectedObjects.map(p => new PredictedObject({
+      xOrigin: p.bbox[0],
+      yOrigin: p.bbox[1],
+      width: p.bbox[2],
+      height: p.bbox[3],
+      class: p.class
+    }))
+  
+    return predictedObjects
+  }
+
+  private doesDetectionPassFilterPredicates (prediction: cocossd.DetectedObject): boolean {
     let failedPredictions = []
     this.filterPredicates.forEach(filter => {
       if (!filter(prediction)) failedPredictions.push(filter)
@@ -28,10 +41,11 @@ class ObjectDetector {
 
   public predictImageStream = async (videoImage: ImageData) => {
     const mlModel = await this.loadMlModel()
-    const predictions = await mlModel.detect(videoImage)
-    const filteredPredictions = predictions.filter(p => this.doesPredictionPassFilterPredicates(p))
+    const detectedObjects = await mlModel.detect(videoImage)
+    const filteredDetections = detectedObjects.filter(p => this.doesDetectionPassFilterPredicates(p))
+    const predictions = this.convertDetectedToPredictedObjects(filteredDetections)
 
-    return filteredPredictions
+    return predictions
   }
 
   public async loadMlModel (): Promise<cocossd.ObjectDetection> {

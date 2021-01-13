@@ -1,8 +1,7 @@
 import { DetectedObject } from "@tensorflow-models/coco-ssd"
 import PredictedObjectCollectionController from "./Controllers/PredictedObjectCollectionController"
 import VideoController from './Controllers/VideoController'
-import ObjectDetector from './Models/ObjectDetector'
-import convertDetectedtoPredictedObject from './UseCases/convertDetectedToPredictedObjects'
+import ObjectDetector from './UseCases/ObjectDetector'
 
 const defaultPredictions = [
   (prediction: DetectedObject) => prediction.score > 0.6,
@@ -29,8 +28,7 @@ class App {
       return
     }
 
-    const detectedObjects: DetectedObject[] = await this.objectDetector.predictImageStream(imageData)
-    const predictedObjects = convertDetectedtoPredictedObject(detectedObjects)
+    const predictedObjects = await this.objectDetector.predictImageStream(imageData)
     this.predictedObjectCollectionController.predictedObjects = predictedObjects
 
     window.requestAnimationFrame(this.predictImage)
