@@ -4,25 +4,21 @@ import VideoController from './Controllers/VideoController'
 import ObjectDetector from './Models/ObjectDetector'
 import PredictedObject from "./Models/PredictedObject"
 
+const defaultPredictions = [
+  (prediction: DetectedObject) => prediction.score > 0.6,
+  (prediction: DetectedObject) => prediction.class === 'cat',
+]
+
 class App {
   private predictedObjectCollectionController: PredictedObjectCollectionController
   private videoController: VideoController
   private objectDetector: ObjectDetector
 
   constructor () {
-    this.objectDetector = new ObjectDetector({
-      filterPredicates: [
-        (prediction: DetectedObject) => prediction.score > 0.6,
-        (prediction: DetectedObject) => prediction.class === 'cat',
-      ]
-    })
-
+    console.log('starting')
+    this.objectDetector = new ObjectDetector({ filterPredicates: defaultPredictions })
     this.predictedObjectCollectionController = new PredictedObjectCollectionController()
-
-    this.videoController = new VideoController({
-      width: 640,
-      height: 480
-    })
+    this.videoController = new VideoController({  width: 640, height: 480 })
     this.predictImage()
   }
 
