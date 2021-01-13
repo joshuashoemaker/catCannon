@@ -2,7 +2,7 @@ import { DetectedObject } from "@tensorflow-models/coco-ssd"
 import PredictedObjectCollectionController from "./Controllers/PredictedObjectCollectionController"
 import VideoController from './Controllers/VideoController'
 import ObjectDetector from './Models/ObjectDetector'
-import PredictedObject from "./Models/PredictedObject"
+import convertDetectedtoPredictedObject from './UseCases/convertDetectedToPredictedObjects'
 
 const defaultPredictions = [
   (prediction: DetectedObject) => prediction.score > 0.6,
@@ -15,7 +15,6 @@ class App {
   private objectDetector: ObjectDetector
 
   constructor () {
-    console.log('starting')
     this.objectDetector = new ObjectDetector({ filterPredicates: defaultPredictions })
     this.predictedObjectCollectionController = new PredictedObjectCollectionController()
     this.videoController = new VideoController({  width: 640, height: 480 })
@@ -30,15 +29,8 @@ class App {
       return
     }
 
-    const predictions: DetectedObject[] = await this.objectDetector.predictImageStream(imageData)
-    const predictedObjects = predictions.map(p => new PredictedObject({
-      xOrigin: p.bbox[0],
-      yOrigin: p.bbox[1],
-      width: p.bbox[2],
-      height: p.bbox[3],
-      class: p.class
-    }))
-
+    const detectedObjects: DetectedObject[] = await this.objectDetector.predictImageStream(imageData)
+    const predictedObjects = convertDetectedtoPredictedObject(detectedObjects)
     this.predictedObjectCollectionController.predictedObjects = predictedObjects
 
     window.requestAnimationFrame(this.predictImage)
