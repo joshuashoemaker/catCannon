@@ -1,20 +1,19 @@
-import PredictedObject from "../Models/PredictedObject"
-import Video from "../Models/Video"
+import IObjectLocator from "../Interfaces/IObjectLocator"
+import IOffset from "../Interfaces/IOffset"
+import IPredictedObject from "../Interfaces/IPredictedObject"
+import IVideo from "../Interfaces/IVideo"
 
-interface Offset {
-  x: number,
-  y: number,
-  hypotenuse: number
-}
+class ObjectLocator implements IObjectLocator {
+  private videoWidth: number
+  private videoHeight: number
 
-class ObjectLocator {
-  private video: Video
-  constructor (video: Video) {
-    this.video = video
+  constructor (props: IVideo) {
+    this.videoWidth = props.width
+    this.videoHeight = props.height
   }
 
-  detectPredictedObjectLocationFromVideo = (predictedObject: PredictedObject): Offset => {
-    const videoCenter = { x: this.video.width / 2, y: this.video.height / 2 }
+  getOffsetsFromPredictions = (predictedObject: IPredictedObject): IOffset => {
+    const videoCenter = { x: this.videoWidth / 2, y: this.videoHeight / 2 }
     const objectCenter = {
       x: predictedObject.xOrigin + (predictedObject.width / 2),
       y: predictedObject.yOrigin + (predictedObject.height / 2)
