@@ -1,43 +1,42 @@
-import { DetectedObject } from "@tensorflow-models/coco-ssd"
-import PredictedObjectCollectionController from "./Controllers/PredictedObjectCollectionController"
-import VideoController from './Controllers/VideoController'
-import ObjectDetector from './UseCases/ObjectDetector'
-import ObjectLocator from "./UseCases/ObjectLocator"
+import IObjectDetector from './Interfaces/IObjectDetector'
+import IObjectLocator from './Interfaces/IObjectLocator'
+import IOffset from './Interfaces/IOffset'
+import IUiRenderer from './Interfaces/IUiRenderer'
+import IVideoCapturer from "./Interfaces/IVideoCapturer"
 
-const defaultPredictions = [
-  (prediction: DetectedObject) => prediction.score > 0.6,
-  (prediction: DetectedObject) => prediction.class === 'person', // TODO: change to cat
-]
+import makeObjectDetector from './UseCases/Factories/makeObjectDetector'
+import makeObjectLocator from './UseCases/Factories/makeObjectLocator'
+import makeUiRenderer from './UseCases/Factories/makeUiRenderer'
+import makeVideoCapturer from './UseCases/Factories/makeVideoCatpurer'
 
 class App {
-  private predictedObjectCollectionController: PredictedObjectCollectionController
-  private videoController: VideoController
-  private objectDetector: ObjectDetector
-  private objectLocator: ObjectLocator
+  private objectDetector: IObjectDetector
+  private objectLocator: IObjectLocator
+  private videoCapturer: IVideoCapturer
+  private uiRenderer: IUiRenderer
 
   constructor () {
-    this.objectDetector = new ObjectDetector({ filterPredicates: defaultPredictions })
-    this.predictedObjectCollectionController = new PredictedObjectCollectionController()
-    this.videoController = new VideoController({  width: 640, height: 480 })
-    this.objectLocator = new ObjectLocator(this.videoController.model)
+    this.videoCapturer = makeVideoCapturer()
+    this.objectDetector = makeObjectDetector()
+    this.objectLocator = makeObjectLocator()
+    this.uiRenderer = makeUiRenderer()
+
+    const eventTarget = new EventTarget()
+    eventTarget.addEventListener('onMediaStreamReady', this.predictImage)
     this.predictImage()
   }
 
   predictImage = async () => {
-    const imageData = this.videoController.imageData
+    const imageData = this.videoCapturer.imageData
 
     if (!imageData) {
       window.requestAnimationFrame(this.predictImage)
       return
     }
 
-    const predictedObjects = await this.objectDetector.predictImageStream(imageData)
-    this.predictedObjectCollectionController.predictedObjects = predictedObjects
-    const offsets = predictedObjects.map(obj => {
-      return this.objectLocator.detectPredictedObjectLocationFromVideo(obj)
-    })
-
-    console.log(offsets)
+    const predictedObjects = await this.objectDetector.getPredictionsFromImageData(imageData)
+    const offsets: IOffset[] = predictedObjects.map(obj => this.objectLocator.getOffsetsFromPredictions(obj))
+    this.uiRenderer.render({ imageData, predictedObjects, offsets })
 
     window.requestAnimationFrame(this.predictImage)
   }
