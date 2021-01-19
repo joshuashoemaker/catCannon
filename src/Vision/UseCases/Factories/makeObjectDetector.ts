@@ -3,7 +3,7 @@ import ObjectDetector from "../ObjectDetector"
 
 const defaultPredictions = [
   (prediction: DetectedObject) => prediction.score > 0.6,
-  (prediction: DetectedObject) => prediction.class === 'cat',
+  (prediction: DetectedObject) => prediction.class === 'person',
 ]
 
 function makeObjectDetector (filterPredicates?: Function[]): ObjectDetector {
