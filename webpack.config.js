@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/Vision/app.ts',
+  entry: './src/Vision/main.ts',
   devtool: 'inline-source-map',
   devServer: {
     contentBase: './dist/Vision',
@@ -20,7 +20,7 @@ module.exports = {
     extensions: [ '.tsx', '.ts', '.js' ],
   },
   output: {
-    filename: 'app.js',
+    filename: 'main.js',
     path: path.resolve(__dirname, 'dist', 'Vision'),
   },
 };
