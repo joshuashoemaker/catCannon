@@ -1,0 +1,24 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+
+.PredictedObject {
+  border: 2px solid green;
+}
+
+.predictedObjectLabel {
+  color: white;
+  background-color: green;
+  font-size: 12px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+
+#VideoView {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
