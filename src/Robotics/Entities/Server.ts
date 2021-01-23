@@ -4,7 +4,7 @@ import bodyParser from 'body-parser'
 import http from 'http'
 import { Socket } from 'socket.io'
 import IEventManager from '../Interfaces/IEventManager'
-import EventManager from '../Entities/EventManager'
+import EventManager from './EventManager'
 
 class Server {
   public app = express()

@@ -22,7 +22,7 @@ class MotorMover implements IMotorMover {
     this.moveProcess = null
 
     const motorProcessArguments = [
-      'src/Server/moveStepper.py',
+      'src/Robotics/moveStepper.py',
       this.motor.pinOne.toString(),
       this.motor.pinTwo.toString(),
       this.motor.pinThree.toString(),
@@ -43,7 +43,7 @@ class MotorMover implements IMotorMover {
     this.moveProcess = null
 
     const motorProcessArguments = [
-      'src/Server/moveStepper.py',
+      'src/Robotics/moveStepper.py',
       this.motor.pinOne.toString(),
       this.motor.pinTwo.toString(),
       this.motor.pinThree.toString(),
