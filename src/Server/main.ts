@@ -1,29 +1,24 @@
-import http from 'http'
 import Server from './Server'
 
+import EventManager from './EventManager'
+import IEventManager from './Interfaces/IEventManager';
+
+
+function sleep (ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const main = () => {
+  console.log('starting')
+  const port = 5005
+  const server = new Server(port)
+  const eventManager: IEventManager = new EventManager()
 
-  const port = normalizePort(process.env.PORT || '5005')
-  const webService = createServer()
-
-  webService.listen(port, () => {
-    console.log(`Server is listening on ${port}`)
+  eventManager.listen('onReceiveOffsets', (offsets: unknown[]) => {
+    console.log(offsets)
   })
-}
-
-const createServer = () => {
-  const server = new Server()
-  return http.createServer(server.app)
-}
-
-const normalizePort = (portString: string) => {
-  const port = parseInt(portString, 10)
-
-  if (isNaN(port)) return portString
-  else if (port >= 0 ) return port
-  else return 0
 }
 
 main()
 
-export { main, createServer, normalizePort }
+export { main }
