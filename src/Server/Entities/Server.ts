@@ -3,8 +3,8 @@ import path from 'path'
 import bodyParser from 'body-parser'
 import http from 'http'
 import { Socket } from 'socket.io'
-import IEventManager from './Interfaces/IEventManager'
-import EventManager from './EventManager'
+import IEventManager from '../Interfaces/IEventManager'
+import EventManager from '../Entities/EventManager'
 
 class Server {
   public app = express()
@@ -50,12 +50,12 @@ class Server {
   }
 
   openSockets = (socketService: any) => {
-    socketService.on('connection', () => {
+    socketService.on('connection', (socket: Socket) => {
       console.log('client connected')
-    })
-
-    socketService.on('message', (message: any) => {
-      console.log(message)
+      
+      socket.on('offsets', (offsets: any[]) => {
+        this.onReceiveOffsets(offsets)
+      })
     })
   }
 

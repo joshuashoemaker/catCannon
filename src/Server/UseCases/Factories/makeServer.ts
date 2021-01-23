@@ -1,4 +1,4 @@
-import { Server } from "socket.io";
+import Server from "../../Entities/Server"
 
 function makeServer (port: number) {
   const defaultPort = 5005

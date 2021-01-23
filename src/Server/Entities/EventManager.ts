@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import IEventManager from './Interfaces/IEventManager'
+import IEventManager from '../Interfaces/IEventManager'
 
 let instance: EventManager | null = null
 

@@ -1,4 +1,4 @@
-import EventManager from "../../EventManager"
+import EventManager from "../../Entities/EventManager"
 
 function makeEventManager () {
   return new EventManager()
