@@ -1,32 +1,32 @@
-import Server from './Server'
+import IEventManager from './Interfaces/IEventManager'
+import IMotorMover from './Interfaces/IMotorMover'
 
-import EventManager from './EventManager'
-import IEventManager from './Interfaces/IEventManager';
-import MotorMover from './MotorMover';
-
-
-function sleep (ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+import makeServer from './UseCases/Factories/makeServer'
+import makeEventManager from './UseCases/Factories/makeEventManager'
+import makeMotorMover from './UseCases/Factories/makeMotorMover'
 
 const main = () => {
   console.log('starting')
-  const port = 5005
-  const server = new Server(port)
-  const eventManager: IEventManager = new EventManager()
 
-  const motorMover = new MotorMover({ pinOne: 3, pinTwo: 5, pinThree: 7, pinFour: 11 })
-  // motorMover.moveClockwise()
+  const port = 5005
+  makeServer(port)
+
+  const eventManager: IEventManager = makeEventManager()
+
+  const xAxisMotorMover: IMotorMover = makeMotorMover({
+    motor: { pinOne: 3, pinTwo: 5, pinThree: 7, pinFour: 11 },
+    pauseIntervalTime: 0.05
+  })
 
   eventManager.listen('onReceiveOffsets', (offsets: any[]) => {
     if (offsets[0]?.x > 50) {
-      motorMover.moveCounterClockwise()
+      xAxisMotorMover.moveCounterClockwise()
     } else if (offsets[0]?.x < - 50) {
-      motorMover.moveClockwise()
+      xAxisMotorMover.moveClockwise()
     } else {
-      motorMover.stopMovement()
+      xAxisMotorMover.stopMovement()
     }
-    console.log(`moving ${motorMover.movementState}`)
+    console.log(`moving ${xAxisMotorMover.movementState}`)
   })
 }
 

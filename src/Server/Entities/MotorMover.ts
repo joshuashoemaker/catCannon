@@ -1,15 +1,18 @@
-import IMotor from "./Interfaces/IMotor"
-import makeMotor from "./UseCases/Factories/makeMotor"
+import IMotor from "../Interfaces/IMotor"
+import makeMotor from "../UseCases/Factories/makeMotor"
 import * as childProcesses from 'child_process'
+import IMotorMoverConstructor from "../Interfaces/IMotorMoverConstructor"
+import IMotorMover from "../Interfaces/IMotorMover"
 
-class MotorMover {
+class MotorMover implements IMotorMover {
   motor: IMotor
   moveProcess: childProcesses.ChildProcessWithoutNullStreams | null = null
-  pauseIntervalTime: number = 0.05
+  pauseIntervalTime: number
   movementState: 'CLOCKWISE' | 'COUNTERCLOCKWISE' | "IDLE" = 'IDLE'
 
-  constructor (motor: IMotor) {
-    this.motor = makeMotor(motor)
+  constructor (props: IMotorMoverConstructor) {
+    this.motor = makeMotor(props.motor)
+    this.pauseIntervalTime = props.pauseIntervalTime
   }
 
   public moveClockwise = () => {
