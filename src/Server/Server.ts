@@ -50,16 +50,17 @@ class Server {
   }
 
   openSockets = (socketService: any) => {
-    socketService.on('connection', () => {
+    socketService.on('connection', (socket: Socket) => {
       console.log('client connected')
+
+      socket.on('offsets', (offsets: any) => {
+        this.onReceiveOffsets(offsets)
+      })
     })
 
-    socketService.on('message', (message: any) => {
-      console.log(message)
-    })
   }
 
-  public onReceiveOffsets = (offsets: any[]) => {
+  onReceiveOffsets = (offsets: any[]) => {
     this.eventManager.emit('onReceiveOffsets', offsets)
 
   }
