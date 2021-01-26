@@ -18,6 +18,11 @@ const main = () => {
     pauseIntervalTime: 0.05
   })
 
+  const yAxisMotorMover: IMotorMover = makeMotorMover({
+    motor: { pinOne: 13, pinTwo: 15, pinThree: 19, pinFour: 21 },
+    pauseIntervalTime: 0.05
+  })
+
   eventManager.listen('onReceiveOffsets', (offsets: any[]) => {
     if (offsets[0]?.x > 50) {
       xAxisMotorMover.moveCounterClockwise()
@@ -26,7 +31,15 @@ const main = () => {
     } else {
       xAxisMotorMover.stopMovement()
     }
-    console.log(`moving ${xAxisMotorMover.movementState}`)
+    
+    if (offsets[0]?.y > 50) {
+      yAxisMotorMover.moveClockwise()
+    } else if (offsets[0]?.y < - 50) {
+      yAxisMotorMover.moveCounterClockwise()
+    } else {
+      yAxisMotorMover.stopMovement()
+    }
+    // console.log(`moving ${xAxisMotorMover.movementState}`)
   })
 }
 

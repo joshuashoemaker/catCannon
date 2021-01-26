@@ -17,9 +17,9 @@ class MotorMover implements IMotorMover {
 
   public moveClockwise = () => {
     if (this.movementState === 'CLOCKWISE') return
-
-    this.moveProcess?.kill()
-    this.moveProcess = null
+    else {
+      if (!this.moveProcess?.killed) this.moveProcess?.kill()
+    }
 
     const motorProcessArguments = [
       'src/Robotics/moveStepper.py',
@@ -38,9 +38,9 @@ class MotorMover implements IMotorMover {
 
   public moveCounterClockwise = () => {
     if (this.movementState === 'COUNTERCLOCKWISE') return
-
-    this.moveProcess?.kill()
-    this.moveProcess = null
+    else {
+      if (!this.moveProcess?.killed) this.moveProcess?.kill()
+    }
 
     const motorProcessArguments = [
       'src/Robotics/moveStepper.py',
@@ -52,13 +52,18 @@ class MotorMover implements IMotorMover {
       this.pauseIntervalTime.toString()
     ]
 
+    console.log('start counterclockwise')
     this.moveProcess = childProcesses.spawn('python', motorProcessArguments)
     this.movementState = 'COUNTERCLOCKWISE'
   }
 
   public stopMovement = () => {
-    this.moveProcess?.kill()
-    this.movementState = 'IDLE'
+    if (this.movementState === 'IDLE') return
+    else {
+      if (!this.moveProcess?.killed) this.moveProcess?.kill()
+      console.log('start idle')
+      this.movementState = 'IDLE'
+    }
   }
 }
 
