@@ -1,12 +1,14 @@
 import IEventManager from './Interfaces/IEventManager'
 import IMotorMover from './Interfaces/IMotorMover'
+import IWaterPumper from './Interfaces/IWaterPumper'
 
 import makeServer from './UseCases/Factories/makeServer'
 import makeEventManager from './UseCases/Factories/makeEventManager'
 import makeMotorMover from './UseCases/Factories/makeMotorMover'
+import makeWaterPumper from './UseCases/Factories/makeWaterPumper'
 
 const main = () => {
-  console.log('starting')
+  console.log('Starting Robotics')
 
   const port = 5005
   makeServer(port)
@@ -21,6 +23,13 @@ const main = () => {
   const yAxisMotorMover: IMotorMover = makeMotorMover({
     motor: { pinOne: 13, pinTwo: 15, pinThree: 19, pinFour: 21 },
     pauseIntervalTime: 0.05
+  })
+
+  const waterPumper: IWaterPumper = makeWaterPumper({
+    pinOne: 37,
+    pinTwo: 35,
+    pumpActiveTimeInSeconds: 1,
+    pumpCoolDownTimeInSeconds: 5
   })
 
   eventManager.listen('onReceiveOffsets', (offsets: any[]) => {
@@ -39,7 +48,10 @@ const main = () => {
     } else {
       yAxisMotorMover.stopMovement()
     }
-    // console.log(`moving ${xAxisMotorMover.movementState}`)
+
+    if (offsets[0]?.hypotenuse <= 80) {
+      waterPumper.pump()
+    }
   })
 }
 
